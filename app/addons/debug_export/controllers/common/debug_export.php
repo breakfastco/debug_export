@@ -45,9 +45,32 @@ if ($mode === 'debug_export') {
         exit;
     }
 
+    // Clear any output already sent by the framework so the download is pure JSON
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+
+    // Prevent gzip: Content-Length must match the actual body or the browser can leave a .part file
+    if (function_exists('ini_set')) {
+        @ini_set('zlib.output_compression', 'Off');
+    }
+    if (!headers_sent()) {
+        header_remove('Content-Encoding');
+        header_remove('Vary');
+    }
+
+    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    if ($json === false) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'Failed to encode debug data.']);
+        exit;
+    }
+
+    $filename = 'debug-report-' . preg_replace('/[^a-zA-Z0-9_-]/', '', $hash) . '.json';
     header('Content-Type: application/json; charset=utf-8');
-    header('Content-Disposition: attachment; filename="debug-report-' . preg_replace('/[^a-zA-Z0-9_-]/', '', $hash) . '.json"');
-    echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Content-Length: ' . strlen($json));
+    header('Cache-Control: no-store');
+    echo $json;
     exit;
 }
-
