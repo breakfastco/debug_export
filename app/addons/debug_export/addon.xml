@@ -2,10 +2,12 @@
 <addon scheme="2.0">
     <id>debug_export</id>
     <name>Debug Export</name>
-    <description>Exports CS-Cart debug report data as JSON.</description>
+    <description>Exports CS-Cart debug report data as JSON. https://breakfastco.xyz/</description>
     <version>1.0</version>
     <priority>50000</priority>
     <position>0</position>
     <default_language>en</default_language>
     <supplier>Breakfast</supplier>
+    <supplier_link>https://breakfastco.xyz</supplier_link>
+    <has_icon>true</has_icon>
 </addon>
